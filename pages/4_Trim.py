@@ -10,7 +10,7 @@ has_models_column = "trim" in df.columns
 
 # User input for selecting interest (assuming the column exists)
 interest_options = ["year", "condition", "odometer", "mmr", "sellingprice"]
-interest = st.sidebar.selectbox("Select Your option", interest_options)
+interest = st.selectbox("Select Your option", interest_options)
 
 
 if has_models_column:
