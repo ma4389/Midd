@@ -15,7 +15,7 @@ if not has_seller_column:
 
 interest_options = df.select_dtypes(include=[np.number]).columns.tolist()  # Get numerical columns
 if interest_options:
-    interest = st.sidebar.selectbox("Select Feature for Analysis", interest_options)
+    interest = st.selectbox("Select Feature for Analysis", interest_options)
     max_value = df[interest].max()
     min_value = df[interest].min()
     avg_value = round(df[interest].mean(), 1)
