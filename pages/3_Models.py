@@ -12,7 +12,7 @@ has_models_column = "model" in df.columns
 
 
 interest_options = ["year", "condition", "odometer", "mmr", "sellingprice"]
-interest = st.sidebar.selectbox("Select Your option", interest_options)
+interest = st.selectbox("Select Your option", interest_options)
 
 
 if has_models_column:
