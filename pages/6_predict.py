@@ -41,7 +41,7 @@ def user_input_features():
         'model': model,
         'trim': trim,
         'body': body,
-        'transmiss': transmission,
+        'transmission': transmission,
         'state': state,
         'condition': condition,
         'odometer': odometer,
