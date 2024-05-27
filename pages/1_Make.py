@@ -39,7 +39,7 @@ st.plotly_chart(fig_hist, use_container_width=True)
 
 # Line chart
 st.header(f"Line Chart of Make vs. {interest}")
-fig_line = px.line(df, x='make', y=interest, color='make', title=f'Line Chart of Make vs. {interest}')
+fig_line = px.line(df, x='make', y=interest , title=f'Line Chart of Make vs. {interest}')
 st.plotly_chart(fig_line, use_container_width=True)
 
 # Pie Chart (assuming categorical Y-axis)
