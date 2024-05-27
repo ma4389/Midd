@@ -12,30 +12,28 @@ df = pd.read_csv('car_prices.csv')
 # Drop NA values
 df.dropna(inplace=True)
 
-# Convert 'saledate' to datetime
+# Convert 'saledate' to datetime with specified format
 try:
-    df['saledate'] = pd.to_datetime(df['saledate'], utc=True)
+    df['saledate'] = pd.to_datetime(df['saledate'], format='%Y-%m-%d', utc=True)
     df['month'] = df['saledate'].dt.month
     df['day'] = df['saledate'].dt.day
 except Exception as e:
     st.error(f"Error converting 'saledate' to datetime with UTC: {e}")
 
-# Sidebar for user inputs
-st.sidebar.header('User Input Features')
-
 # Function to get user input
 def user_input_features():
-    year = st.sidebar.selectbox('Year', sorted(df['year'].unique()))
-    make = st.sidebar.selectbox('Make', df['make'].unique())
-    model = st.sidebar.selectbox('Model', df['model'].unique())
-    trim = st.sidebar.selectbox('Trim', df['trim'].unique())
-    body = st.sidebar.selectbox('Body', df['body'].unique())
-    transmission = st.sidebar.selectbox('Transmission', df['transmission'].unique())
-    state = st.sidebar.selectbox('State', df['state'].unique())
-    condition = st.sidebar.slider('Condition', min_value=int(df['condition'].min()), max_value=int(df['condition'].max()), value=int(df['condition'].median()))
-    odometer = st.sidebar.number_input('Odometer', value=int(df['odometer'].median()))
-    color = st.sidebar.selectbox('Color', df['color'].unique())
-    interior = st.sidebar.selectbox('Interior', df['interior'].unique())
+    st.header('User Input Features')
+    year = st.selectbox('Year', sorted(df['year'].unique()))
+    make = st.selectbox('Make', df['make'].unique())
+    model = st.selectbox('Model', df['model'].unique())
+    trim = st.selectbox('Trim', df['trim'].unique())
+    body = st.selectbox('Body', df['body'].unique())
+    transmission = st.selectbox('Transmission', df['transmission'].unique())
+    state = st.selectbox('State', df['state'].unique())
+    condition = st.slider('Condition', min_value=int(df['condition'].min()), max_value=int(df['condition'].max()), value=int(df['condition'].median()))
+    odometer = st.number_input('Odometer', value=int(df['odometer'].median()))
+    color = st.selectbox('Color', df['color'].unique())
+    interior = st.selectbox('Interior', df['interior'].unique())
     
     data = {
         'year': year,
@@ -57,8 +55,8 @@ def user_input_features():
 
 input_df = user_input_features()
 
-# Combine user input features with the entire dataset
-df = pd.concat([input_df, df], axis=0)
+# Combine user input features with a small subset of the entire dataset to manage memory usage
+df = pd.concat([input_df, df.head(1000)], axis=0)
 
 # Encode categorical features
 df = pd.get_dummies(df, drop_first=True)
