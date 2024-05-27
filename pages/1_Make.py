@@ -6,17 +6,24 @@ import plotly.express as px
 df = pd.read_csv('car_prices.csv')
 df.dropna(inplace=True)
 
-# Convert 'saledate' to datetime format and create 'month' and 'day' columns
-df['saledate'] = pd.to_datetime(df['saledate'])
-df['month'] = df['saledate'].dt.month
-df['day'] = df['saledate'].dt.day
+# Check and convert 'saledate' to datetime with UTC
+if 'saledate' in df.columns:
+    try:
+        df['saledate'] = pd.to_datetime(df['saledate'], utc=True)
+        df['month'] = df['saledate'].dt.month
+        df['day'] = df['saledate'].dt.day
+    except Exception as e:
+        st.error(f"Error converting 'saledate' to datetime with UTC: {e}")
 
 # Page header
 st.header("Insights of Make")
 st.markdown("Make: The manufacturer of the car (e.g., Ford, Kia, Chevrolet)")
 
 # Dropdown for selecting interest option
-interest_options = ['year', 'condition', 'odometer', 'mmr', 'sellingprice', 'month', 'day']
+interest_options = ['year', 'condition', 'odometer', 'mmr', 'sellingprice']
+if 'month' in df.columns and 'day' in df.columns:
+    interest_options += ['month', 'day']
+
 interest = st.selectbox('Select Your Option', interest_options)
 
 # Bar chart for top 10
