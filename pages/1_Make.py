@@ -49,7 +49,7 @@ if interest in df.columns:
 
     # Line chart
     st.header(f"Line Chart of Make vs. {interest}")
-    fig_line = px.line(grouped_df, x='make', y=interest, title=f'Line Chart of Make vs. {interest}', color='make')
+    fig_line = px.line(grouped_df, x='make', y=interest, title=f'Line Chart of Make vs. {interest}')
     st.plotly_chart(fig_line, use_container_width=True)
 
     # Bar chart
