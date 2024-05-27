@@ -62,7 +62,10 @@ df = pd.concat([input_df, df.head(1000)], axis=0)
 df = pd.get_dummies(df, drop_first=True)
 
 # Separate the input features and target variable
-X = df.drop(columns=['sellingprice', 'saledate'])
+if 'saledate' in df.columns:
+    X = df.drop(columns=['sellingprice', 'saledate'])
+else:
+    X = df.drop(columns=['sellingprice'])
 y = df['sellingprice'].values
 
 # Split the data into training and testing sets
