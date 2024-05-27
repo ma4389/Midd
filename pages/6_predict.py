@@ -9,9 +9,6 @@ from sklearn.metrics import mean_absolute_error
 # Load the dataset
 df = pd.read_csv('car_prices.csv')
 
-# Drop NA values
-df.dropna(inplace=True)
-
 # Convert 'saledate' to datetime with specified format
 try:
     df['saledate'] = pd.to_datetime(df['saledate'], format='%Y-%m-%d', utc=True)
@@ -57,6 +54,10 @@ input_df = user_input_features()
 
 # Combine user input features with a small subset of the entire dataset to manage memory usage
 df = pd.concat([input_df, df.head(1000)], axis=0)
+
+# Drop NA values
+df.dropna(subset=['sellingprice'], inplace=True)
+df.dropna(inplace=True)
 
 # Encode categorical features
 df = pd.get_dummies(df, drop_first=True)
