@@ -4,9 +4,15 @@ import plotly.express as px
 
 # Load data
 df = pd.read_csv('car_prices.csv')
+
+# Page header
+st.header("Insights of Make")
+st.markdown("Make: The manufacturer of the car (e.g., Ford, Kia, Chevrolet)")
+
+# Drop NaN values
 df.dropna(inplace=True)
 
-# Check and convert 'saledate' to datetime with UTC
+# Convert 'saledate' to datetime with UTC and extract month and day
 if 'saledate' in df.columns:
     try:
         df['saledate'] = pd.to_datetime(df['saledate'], utc=True)
@@ -14,10 +20,6 @@ if 'saledate' in df.columns:
         df['day'] = df['saledate'].dt.day
     except Exception as e:
         st.error(f"Error converting 'saledate' to datetime with UTC: {e}")
-
-# Page header
-st.header("Insights of Make")
-st.markdown("Make: The manufacturer of the car (e.g., Ford, Kia, Chevrolet)")
 
 # Dropdown for selecting interest option
 interest_options = ['year', 'condition', 'odometer', 'mmr', 'sellingprice']
@@ -30,14 +32,15 @@ interest = st.selectbox('Select Your Option', interest_options)
 mydf = df.nlargest(10, interest)
 st.plotly_chart(px.bar(mydf, x='make', y=interest, title=f'Top 10 {interest}', color='make'), use_container_width=True)
 
-# Feature options for scatter plot
-feature_options = df.columns.tolist()
-feature_options.remove('make')
+# Histogram (count plot) for 'make'
+st.header("Histogram of Make")
+fig_hist = px.histogram(df, x='make', title='Distribution of Car Makes', color='make')
+st.plotly_chart(fig_hist, use_container_width=True)
 
-# Scatter plot
-st.header(f"Scatter Plot of Make vs. {interest}")
-fig_scatter = px.scatter(df, x='make', y=interest, color='make')
-st.plotly_chart(fig_scatter, use_container_width=True)
+# Line chart
+st.header(f"Line Chart of Make vs. {interest}")
+fig_line = px.line(df, x='make', y=interest, color='make', title=f'Line Chart of Make vs. {interest}')
+st.plotly_chart(fig_line, use_container_width=True)
 
 # Pie Chart (assuming categorical Y-axis)
 if df[interest].dtype == "object":
