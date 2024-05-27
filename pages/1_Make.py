@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 
 # Load data
-df = pd.read_csv(r'E:/AI/Notebooks/car_prices.csv')
+df = pd.read_csv('car_prices.csv')
 df.dropna(inplace=True)
 
 # Convert 'saledate' to datetime format and create 'month' and 'day' columns
