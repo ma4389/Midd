@@ -61,38 +61,46 @@ df = pd.concat([input_df, df.head(1000)], axis=0)
 # Encode categorical features
 df = pd.get_dummies(df, drop_first=True)
 
-# Separate the input features and target variable
-if 'saledate' in df.columns:
-    X = df.drop(columns=['sellingprice', 'saledate'])
+# Check and handle NaN values in 'sellingprice'
+if 'sellingprice' not in df.columns or df['sellingprice'].isnull().sum() > 0:
+    st.error("The target variable 'sellingprice' contains NaN values or is missing.")
 else:
-    X = df.drop(columns=['sellingprice'])
-y = df['sellingprice'].values
+    # Separate the input features and target variable
+    if 'saledate' in df.columns:
+        X = df.drop(columns=['sellingprice', 'saledate'])
+    else:
+        X = df.drop(columns=['sellingprice'])
+    y = df['sellingprice'].values
 
-# Split the data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    # Ensure there are no NaN values in the target variable
+    if pd.isnull(y).sum() > 0:
+        st.error("The target variable 'sellingprice' contains NaN values.")
+    else:
+        # Split the data into training and testing sets
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Train a RandomForestRegressor
-model = RandomForestRegressor(n_estimators=100, random_state=42)
-model.fit(X_train, y_train)
+        # Train a RandomForestRegressor
+        model = RandomForestRegressor(n_estimators=100, random_state=42)
+        model.fit(X_train, y_train)
 
-# Make predictions on the test set and calculate the error
-y_pred = model.predict(X_test)
-mae = mean_absolute_error(y_test, y_pred)
+        # Make predictions on the test set and calculate the error
+        y_pred = model.predict(X_test)
+        mae = mean_absolute_error(y_test, y_pred)
 
-# Make predictions on the user input
-input_features = df.iloc[:1, :-1]
-prediction = model.predict(input_features)
+        # Make predictions on the user input
+        input_features = df.iloc[:1, :-1]
+        prediction = model.predict(input_features)
 
-# Display results
-st.header('Heatmap of Numerical Features')
-numeric_cols = df.select_dtypes(include=['float64', 'int64']).columns
-plt.figure(figsize=(10, 8))
-sns.heatmap(df[numeric_cols].corr(), annot=True, cmap='coolwarm')
-st.pyplot(plt)
+        # Display results
+        st.header('Heatmap of Numerical Features')
+        numeric_cols = df.select_dtypes(include=['float64', 'int64']).columns
+        plt.figure(figsize=(10, 8))
+        sns.heatmap(df[numeric_cols].corr(), annot=True, cmap='coolwarm')
+        st.pyplot(plt)
 
-st.subheader('User Input Features')
-st.write(input_df)
+        st.subheader('User Input Features')
+        st.write(input_df)
 
-st.subheader('Prediction Results')
-st.write(f"Predicted Selling Price: ${prediction[0]:,.2f}")
-st.write(f"Model Mean Absolute Error: ${mae:,.2f}")
+        st.subheader('Prediction Results')
+        st.write(f"Predicted Selling Price: ${prediction[0]:,.2f}")
+        st.write(f"Model Mean Absolute Error: ${mae:,.2f}")
