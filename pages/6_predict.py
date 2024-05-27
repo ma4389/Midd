@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error
@@ -28,7 +30,7 @@ def user_input_features():
     model = st.sidebar.selectbox('Model', df['model'].unique())
     trim = st.sidebar.selectbox('Trim', df['trim'].unique())
     body = st.sidebar.selectbox('Body', df['body'].unique())
-    transmission = st.sidebar.selectbox('Transmission', df['transmiss'].unique())
+    transmission = st.sidebar.selectbox('Transmission', df['transmission'].unique())
     state = st.sidebar.selectbox('State', df['state'].unique())
     condition = st.sidebar.slider('Condition', min_value=int(df['condition'].min()), max_value=int(df['condition'].max()), value=int(df['condition'].median()))
     odometer = st.sidebar.number_input('Odometer', value=int(df['odometer'].median()))
@@ -93,4 +95,3 @@ st.write(input_df)
 st.subheader('Prediction Results')
 st.write(f"Predicted Selling Price: ${prediction[0]:,.2f}")
 st.write(f"Model Mean Absolute Error: ${mae:,.2f}")
-
