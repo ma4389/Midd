@@ -28,44 +28,56 @@ if 'month' in df.columns and 'day' in df.columns:
 
 interest = st.selectbox('Select Your Option', interest_options)
 
-# Bar chart for top 10
-mydf = df.nlargest(10, interest)
-st.plotly_chart(px.bar(mydf, x='make', y=interest, title=f'Top 10 {interest}', color='make'), use_container_width=True)
+# Group by 'make' and selected interest
+if interest in df.columns:
+    if interest == 'year':
+        grouped_df = df.groupby('make')[interest].agg(lambda x: x.mode()).reset_index()
+    else:
+        grouped_df = df.groupby('make')[interest].mean().reset_index()
 
-# Histogram (count plot) for 'make'
-st.header("Histogram of Make")
-fig_hist = px.histogram(df, x='make', title='Distribution of Car Makes', color='make')
-st.plotly_chart(fig_hist, use_container_width=True)
+    # Display grouped data
+    st.dataframe(grouped_df.head(10))
 
-# Line chart
-st.header(f"Line Chart of Make vs. {interest}")
-fig_line = px.line(df, x='make', y=interest , title=f'Line Chart of Make vs. {interest}')
-st.plotly_chart(fig_line, use_container_width=True)
+    # Bar chart for top 10
+    mydf = grouped_df.nlargest(10, interest)
+    st.plotly_chart(px.bar(mydf, x='make', y=interest, title=f'Top 10 {interest}', color='make'), use_container_width=True)
 
-# Pie Chart (assuming categorical Y-axis)
-if df[interest].dtype == "object":
-    st.header(f"Distribution of Cars by {interest}")
-    fig_pie = px.pie(df, names=interest, title=f'Distribution of Cars by {interest}')
-    st.plotly_chart(fig_pie, use_container_width=True)
+    # Histogram (count plot) for 'make'
+    st.header("Histogram of Make")
+    fig_hist = px.histogram(df, x='make', title='Distribution of Car Makes', color='make')
+    st.plotly_chart(fig_hist, use_container_width=True)
+
+    # Line chart
+    st.header(f"Line Chart of Make vs. {interest}")
+    fig_line = px.line(df, x='make', y=interest, title=f'Line Chart of Make vs. {interest}')
+    st.plotly_chart(fig_line, use_container_width=True)
+
+    # Pie Chart (assuming categorical Y-axis)
+    if df[interest].dtype == "object":
+        st.header(f"Distribution of Cars by {interest}")
+        fig_pie = px.pie(df, names=interest, title=f'Distribution of Cars by {interest}')
+        st.plotly_chart(fig_pie, use_container_width=True)
+    else:
+        st.write(f"Pie chart not suitable for continuous Y-axis ({interest}).")
+
+    # Metrics
+    max_value = df[interest].max()
+    min_value = df[interest].min()
+    avg_value = round(df[interest].mean(), 1)
+
+    col1, col2, col3 = st.columns(3)
+    col1.metric(label=f'Max {interest}', value=max_value)
+    col2.metric(label=f'Min {interest}', value=min_value)
+    col3.metric(label=f'Avg {interest}', value=avg_value)
+
+    # Top 10 table
+    col1.markdown(f'<h2 style="text-align: center; color: #191970;">Top 10 {interest}</h2>', unsafe_allow_html=True)
+    top_df = df.nlargest(10, interest)
+    col1.dataframe(top_df)
+
+    # Bottom 10 table
+    col2.markdown(f'<h2 style="text-align: center; color: #191970;">Bottom 10 {interest}</h2>', unsafe_allow_html=True)
+    bottom_df = df.nsmallest(10, interest)
+    col2.dataframe(bottom_df)
 else:
-    st.write(f"Pie chart not suitable for continuous Y-axis ({interest}).")
-
-# Metrics
-max_value = df[interest].max()
-min_value = df[interest].min()
-avg_value = round(df[interest].mean(), 1)
-
-col1, col2, col3 = st.columns(3)
-col1.metric(label=f'Max {interest}', value=max_value)
-col2.metric(label=f'Min {interest}', value=min_value)
-col3.metric(label=f'Avg {interest}', value=avg_value)
-
-# Top 10 table
-col1.markdown(f'<h2 style="text-align: center; color: #191970;">Top 10 {interest}</h2>', unsafe_allow_html=True)
-top_df = df.nlargest(10, interest)
-col1.dataframe(top_df)
-
-# Bottom 10 table
-col2.markdown(f'<h2 style="text-align: center; color: #191970;">Bottom 10 {interest}</h2>', unsafe_allow_html=True)
-bottom_df = df.nsmallest(10, interest)
-col2.dataframe(bottom_df)
+    st.error(f"Selected interest '{interest}' is not in the dataframe columns.")
