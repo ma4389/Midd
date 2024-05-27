@@ -3,34 +3,36 @@ import pandas as pd
 import plotly.express as px
 
 # Load data
-df = pd.read_csv('car_prices.csv')
-
-# Drop NaN values
+df = pd.read_csv(r'E:/AI/Notebooks/car_prices.csv')
 df.dropna(inplace=True)
 
+# Convert 'saledate' to datetime format and create 'month' and 'day' columns
+df['saledate'] = pd.to_datetime(df['saledate'])
+df['month'] = df['saledate'].dt.month
+df['day'] = df['saledate'].dt.day
+
 # Page header
-st.header("Insights of Car Prices by Make")
-st.markdown("Explore various metrics by car make, including bar, scatter, line, and pie charts.")
+st.header("Insights of Make")
+st.markdown("Make: The manufacturer of the car (e.g., Ford, Kia, Chevrolet)")
 
 # Dropdown for selecting interest option
-interest_options = ['year', 'condition', 'odometer', 'mmr', 'sellingprice']
+interest_options = ['year', 'condition', 'odometer', 'mmr', 'sellingprice', 'month', 'day']
 interest = st.selectbox('Select Your Option', interest_options)
 
 # Bar chart for top 10
 mydf = df.nlargest(10, interest)
 st.plotly_chart(px.bar(mydf, x='make', y=interest, title=f'Top 10 {interest}', color='make'), use_container_width=True)
 
+# Feature options for scatter plot
+feature_options = df.columns.tolist()
+feature_options.remove('make')
+
 # Scatter plot
 st.header(f"Scatter Plot of Make vs. {interest}")
 fig_scatter = px.scatter(df, x='make', y=interest, color='make')
 st.plotly_chart(fig_scatter, use_container_width=True)
 
-# Line chart
-st.header(f"Line Chart of Make vs. {interest}")
-fig_line = px.line(df, x='make', y=interest, color='make', title=f'Line Chart of Make vs. {interest}')
-st.plotly_chart(fig_line, use_container_width=True)
-
-# Pie chart
+# Pie Chart (assuming categorical Y-axis)
 if df[interest].dtype == "object":
     st.header(f"Distribution of Cars by {interest}")
     fig_pie = px.pie(df, names=interest, title=f'Distribution of Cars by {interest}')
