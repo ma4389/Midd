@@ -11,7 +11,7 @@ df = pd.read_csv('car_prices.csv')
 
 # Convert 'saledate' to datetime with specified format
 try:
-    df['saledate'] = pd.to_datetime(df['saledate'], format='%Y-%m-%d', utc=True)
+    df['saledate'] = pd.to_datetime(df['saledate'], utc=True)
     df['month'] = df['saledate'].dt.month
     df['day'] = df['saledate'].dt.day
 except Exception as e:
