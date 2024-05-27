@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error
@@ -90,12 +89,6 @@ else:
             input_features = df.iloc[:1, :-1]
             prediction = model.predict(input_features)
 
-            # Display results
-            st.header('Heatmap of Numerical Features')
-            numeric_cols = df.select_dtypes(include=['float64', 'int64']).columns
-            plt.figure(figsize=(10, 8))
-            sns.heatmap(df[numeric_cols].corr(), annot=True, cmap='coolwarm')
-            st.pyplot(plt)
 
             st.subheader('User Input Features')
             st.write(input_df)
